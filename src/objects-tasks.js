@@ -33,9 +33,20 @@ function shallowCopy(obj) {
 //  *    mergeObjects([{a: 1, b: 2}, {b: 3, c: 5}]) => {a: 1, b: 5, c: 5}
 //  *    mergeObjects([]) => {}
 //  */
-// function mergeObjects(/* objects */) {
-//   throw new Error('Not implemented');
-// }
+function mergeObjects(objects) {
+  const merged = objects
+    .flatMap((obj) => Object.entries(obj))
+    .reduce(
+      (result, [key, value]) => ({
+        ...result,
+        [key]: (result[key] ?? 0) + value,
+      }),
+      {}
+    );
+
+  return Object.fromEntries(Object.entries(merged));
+}
+
 //
 // /**
 //  * Removes a properties from an object.
@@ -50,9 +61,15 @@ function shallowCopy(obj) {
 //  *    removeProperties({name: 'John', age: 30, city: 'New York'}, ['age']) => {name: 'John', city: 'New York'}
 //  *
 //  */
-// function removeProperties(/* obj, keys */) {
-//   throw new Error('Not implemented');
-// }
+function removeProperties(obj, keys) {
+  const result = { ...obj };
+
+  keys.forEach((key) => {
+    delete result[key];
+  });
+
+  return result;
+}
 //
 // /**
 //  * Compares two source objects. Returns true if the objects are equal and false otherwise.
@@ -66,9 +83,18 @@ function shallowCopy(obj) {
 //  *    compareObjects({a: 1, b: 2}, {a: 1, b: 2}) => true
 //  *    compareObjects({a: 1, b: 2}, {a: 1, b: 3}) => false
 //  */
-// function compareObjects(/* obj1, obj2 */) {
-//   throw new Error('Not implemented');
-// }
+function compareObjects(obj1, obj2) {
+  const entries1 = Object.entries(obj1);
+  const entries2 = Object.entries(obj2);
+
+  return (
+    entries1.length === entries2.length &&
+    entries1.every(
+      ([key, value]) =>
+        Object.prototype.hasOwnProperty.call(obj2, key) && obj2[key] === value
+    )
+  );
+}
 //
 // /**
 //  * Checks if the source object is empty.
@@ -81,9 +107,9 @@ function shallowCopy(obj) {
 //  *    isEmptyObject({}) => true
 //  *    isEmptyObject({a: 1}) => false
 //  */
-// function isEmptyObject(/* obj */) {
-//   throw new Error('Not implemented');
-// }
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0;
+}
 //
 // /**
 //  * Makes the source object immutable by preventing any changes to its properties.
@@ -101,9 +127,9 @@ function shallowCopy(obj) {
 //  *    immutableObj.newProp = 'new';
 //  *    console.log(immutableObj) => {a: 1, b: 2}
 //  */
-// function makeImmutable(/* obj */) {
-//   throw new Error('Not implemented');
-// }
+function makeImmutable(obj) {
+  return Object.freeze(obj);
+}
 //
 // /**
 //  * Returns a word from letters whose positions are provided as an object.
@@ -115,9 +141,17 @@ function shallowCopy(obj) {
 //  *    makeWord({ a: [0, 1], b: [2, 3], c: [4, 5] }) => 'aabbcc'
 //  *    makeWord({ H:[0], e: [1], l: [2, 3, 8], o: [4, 6], W:[5], r:[7], d:[9]}) => 'HelloWorld'
 //  */
-// function makeWord(/* lettersObject */) {
-//   throw new Error('Not implemented');
-// }
+function makeWord(lettersObject) {
+  const letters = [];
+
+  Object.entries(lettersObject).forEach(([letter, positions]) => {
+    positions.forEach((position) => {
+      letters[position] = letter;
+    });
+  });
+
+  return letters.join('');
+}
 //
 // /**
 //  * There is a queue for tickets to a popular movie.
@@ -133,9 +167,46 @@ function shallowCopy(obj) {
 //  *    sellTickets([25, 25, 50]) => true
 //  *    sellTickets([25, 100]) => false (The seller does not have enough money to give change.)
 //  */
-// function sellTickets(/* queue */) {
-//   throw new Error('Not implemented');
-// }
+function sellTickets(queue) {
+  const cash = {
+    25: 0,
+    50: 0,
+  };
+
+  return queue.every((bill) => {
+    if (bill === 25) {
+      cash[25] += 1;
+      return true;
+    }
+
+    if (bill === 50) {
+      if (cash[25] === 0) {
+        return false;
+      }
+
+      cash[25] -= 1;
+      cash[50] += 1;
+      return true;
+    }
+
+    if (bill === 100) {
+      if (cash[50] > 0 && cash[25] > 0) {
+        cash[50] -= 1;
+        cash[25] -= 1;
+        return true;
+      }
+
+      if (cash[25] >= 3) {
+        cash[25] -= 3;
+        return true;
+      }
+
+      return false;
+    }
+
+    return false;
+  });
+}
 //
 // /**
 //  * Returns the rectangle object with width and height parameters and getArea() method
@@ -150,9 +221,14 @@ function shallowCopy(obj) {
 //  *    console.log(r.height);      // => 20
 //  *    console.log(r.getArea());   // => 200
 //  */
-// function Rectangle(/* width, height */) {
-//   throw new Error('Not implemented');
-// }
+function Rectangle(width, height) {
+  this.width = width;
+  this.height = height;
+}
+
+Rectangle.prototype.getArea = function getArea() {
+  return this.width * this.height;
+};
 //
 // /**
 //  * Returns the JSON representation of specified object
@@ -164,9 +240,9 @@ function shallowCopy(obj) {
 //  *    [1,2,3]   =>  '[1,2,3]'
 //  *    { height: 10, width: 20 } => '{"height":10,"width":20}'
 //  */
-// function getJSON(/* obj */) {
-//   throw new Error('Not implemented');
-// }
+function getJSON(obj) {
+  return JSON.stringify(obj);
+}
 //
 // /**
 //  * Returns the object of specified type from JSON representation
@@ -179,9 +255,9 @@ function shallowCopy(obj) {
 //  *    const r = fromJSON(Circle.prototype, '{"radius":10}');
 //  *
 //  */
-// function fromJSON(/* proto, json */) {
-//   throw new Error('Not implemented');
-// }
+function fromJSON(proto, json) {
+  return Object.assign(Object.create(proto), JSON.parse(json));
+}
 //
 // /**
 //  * Sorts the specified array by country name first and city name
@@ -214,9 +290,11 @@ function shallowCopy(obj) {
 //  *      { country: 'Russia',  city: 'Saint Petersburg' }
 //  *    ]
 //  */
-// function sortCitiesArray(/* arr */) {
-//   throw new Error('Not implemented');
-// }
+function sortCitiesArray(arr) {
+  return [...arr].sort(
+    (a, b) => a.country.localeCompare(b.country) || a.city.localeCompare(b.city)
+  );
+}
 //
 // /**
 //  * Groups elements of the specified array by key.
@@ -253,9 +331,20 @@ function shallowCopy(obj) {
 //  *    "Poland" => ["Lodz"]
 //  *   }
 //  */
-// function group(/* array, keySelector, valueSelector */) {
-//   throw new Error('Not implemented');
-// }
+function group(array, keySelector, valueSelector) {
+  return array.reduce((result, item) => {
+    const key = keySelector(item);
+    const value = valueSelector(item);
+
+    if (!result.has(key)) {
+      result.set(key, []);
+    }
+
+    result.get(key).push(value);
+
+    return result;
+  }, new Map());
+}
 //
 // /**
 //  * Css selectors builder
@@ -343,17 +432,17 @@ function shallowCopy(obj) {
 
 module.exports = {
   shallowCopy,
-  // mergeObjects,
-  // removeProperties,
-  // compareObjects,
-  // isEmptyObject,
-  // makeImmutable,
-  // makeWord,
-  // sellTickets,
-  // Rectangle,
-  // getJSON,
-  // fromJSON,
-  // group,
-  // sortCitiesArray,
+  mergeObjects,
+  removeProperties,
+  compareObjects,
+  isEmptyObject,
+  makeImmutable,
+  makeWord,
+  sellTickets,
+  Rectangle,
+  getJSON,
+  fromJSON,
+  group,
+  sortCitiesArray,
   // cssSelectorBuilder,
 };
